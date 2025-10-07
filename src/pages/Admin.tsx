@@ -27,13 +27,6 @@ const Admin = () => {
 
   useEffect(() => {
     checkAdminAndFetchLogs();
-    
-    // Set up auto-refresh every 10 seconds
-    const interval = setInterval(() => {
-      fetchLogs();
-    }, 10000);
-    
-    return () => clearInterval(interval);
   }, []);
 
   const checkAdminAndFetchLogs = async () => {
