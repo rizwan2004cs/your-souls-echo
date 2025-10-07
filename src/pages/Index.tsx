@@ -18,35 +18,26 @@ interface EmotionalMode {
   response_style: string;
 }
 
+interface VerseItem {
+  verse: string;
+  translation: string;
+  detectedMode: string;
+  emotionalInput: string;
+  createdAt: string;
+}
+
 const Index = () => {
   const navigate = useNavigate();
   const [selectedMode, setSelectedMode] = useState<EmotionalMode | null>(null);
-  const [verse, setVerse] = useState<string | null>(null);
-  const [translation, setTranslation] = useState<string>("");
-  const [detectedMode, setDetectedMode] = useState<string>("");
-  const [emotionalInput, setEmotionalInput] = useState("");
+  const [sessionVerses, setSessionVerses] = useState<VerseItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [selectedLanguage, setSelectedLanguage] = useState("hinglish");
   const [isAdmin, setIsAdmin] = useState(false);
-  const [verseHistory, setVerseHistory] = useState<any[]>([]);
 
   useEffect(() => {
-    // Restore state from localStorage
-    const savedVerse = localStorage.getItem("verseYou_lastVerse");
-    const savedTranslation = localStorage.getItem("verseYou_lastTranslation");
-    const savedMode = localStorage.getItem("verseYou_lastMode");
-    const savedInput = localStorage.getItem("verseYou_lastInput");
     const savedLanguage = localStorage.getItem("verseYou_language");
-    
-    if (savedVerse) {
-      setVerse(savedVerse);
-      setTranslation(savedTranslation || "");
-      setDetectedMode(savedMode || "");
-      setEmotionalInput(savedInput || "");
-    }
-
     if (savedLanguage) {
       setSelectedLanguage(savedLanguage);
     }
@@ -116,10 +107,6 @@ const Index = () => {
 
   const handleGenerateVerse = async (input: string) => {
     setIsLoading(true);
-    setEmotionalInput(input);
-    setVerse(null);
-    setTranslation("");
-    setDetectedMode("");
 
     try {
       // Get conversation history for context
@@ -148,15 +135,16 @@ const Index = () => {
       if (error) throw error;
       
       if (data?.verse) {
-        setVerse(data.verse);
-        setTranslation(data.translation || "");
-        setDetectedMode(data.detectedMode || "");
+        // Add new verse to session history
+        const newVerse: VerseItem = {
+          verse: data.verse,
+          translation: data.translation || "",
+          detectedMode: data.detectedMode || "",
+          emotionalInput: input,
+          createdAt: new Date().toISOString(),
+        };
         
-        // Save to localStorage
-        localStorage.setItem("verseYou_lastVerse", data.verse);
-        localStorage.setItem("verseYou_lastTranslation", data.translation || "");
-        localStorage.setItem("verseYou_lastMode", data.detectedMode || "");
-        localStorage.setItem("verseYou_lastInput", input);
+        setSessionVerses(prev => [newVerse, ...prev]);
         
         // Save to conversation history if logged in
         if (user) {
@@ -168,9 +156,6 @@ const Index = () => {
             detected_mode: data.detectedMode || "",
             language: selectedLanguage,
           });
-          
-          // Refresh history
-          fetchVerseHistory();
         }
         
         // Find and set the mode
@@ -193,28 +178,6 @@ const Index = () => {
       setIsLoading(false);
     }
   };
-
-  const fetchVerseHistory = async () => {
-    if (!user) return;
-    
-    const { data } = await supabase
-      .from("conversation_history")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(10);
-    
-    if (data && data.length > 0) {
-      // Exclude the most recent one (it's shown large)
-      setVerseHistory(data.slice(1));
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchVerseHistory();
-    }
-  }, [user]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -283,33 +246,33 @@ const Index = () => {
         </section>
 
         {/* Latest Verse Display - Large */}
-        {verse && (
+        {sessionVerses.length > 0 && (
           <section className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
             <VerseDisplay
-              verse={verse}
-              translation={translation}
-              detectedMode={detectedMode}
-              emotionalInput={emotionalInput}
+              verse={sessionVerses[0].verse}
+              translation={sessionVerses[0].translation}
+              detectedMode={sessionVerses[0].detectedMode}
+              emotionalInput={sessionVerses[0].emotionalInput}
               modeId={selectedMode?.id || ""}
             />
           </section>
         )}
 
         {/* Previous Verses - Mini Cards */}
-        {user && verseHistory.length > 0 && (
+        {sessionVerses.length > 1 && (
           <section className="max-w-5xl mx-auto space-y-4">
             <h3 className="text-lg font-medium text-muted-foreground text-center mb-6">
-              Your Previous Verses
+              Previous in this session
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {verseHistory.map((item) => (
+              {sessionVerses.slice(1).map((item, index) => (
                 <VerseHistoryCard
-                  key={item.id}
-                  verse={item.verse_response}
+                  key={index}
+                  verse={item.verse}
                   translation={item.translation}
-                  emotionalInput={item.emotional_input}
-                  detectedMode={item.detected_mode}
-                  createdAt={item.created_at}
+                  emotionalInput={item.emotionalInput}
+                  detectedMode={item.detectedMode}
+                  createdAt={item.createdAt}
                 />
               ))}
             </div>
