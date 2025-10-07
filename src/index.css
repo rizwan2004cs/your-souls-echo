@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* VerseYou - Calming, poetic color palette */
+    --background: 42 35% 96%;
+    --foreground: 30 15% 25%;
+
+    --card: 40 30% 98%;
+    --card-foreground: 30 15% 25%;
+
+    --popover: 40 30% 98%;
+    --popover-foreground: 30 15% 25%;
+
+    /* Sage green - calming primary */
+    --primary: 140 25% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Soft peach - warm accent */
+    --secondary: 25 85% 75%;
+    --secondary-foreground: 30 15% 25%;
+
+    /* Muted sage background */
+    --muted: 140 20% 92%;
+    --muted-foreground: 30 15% 45%;
+
+    /* Warm cream accent */
+    --accent: 40 60% 88%;
+    --accent-foreground: 30 15% 25%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 140 20% 88%;
+    --input: 140 20% 90%;
+    --ring: 140 25% 55%;
+
+    --radius: 0.75rem;
+
+    /* Custom gradients for poetic feel */
+    --gradient-soft: linear-gradient(135deg, hsl(140 25% 55% / 0.1), hsl(25 85% 75% / 0.1));
+    --gradient-verse: linear-gradient(180deg, hsl(40 30% 98%), hsl(140 20% 92%));
+    
+    /* Shadows for depth */
+    --shadow-soft: 0 4px 16px hsl(140 25% 55% / 0.08);
+    --shadow-verse: 0 8px 24px hsl(140 25% 55% / 0.12);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 140 15% 12%;
+    --foreground: 40 30% 92%;
+
+    --card: 140 15% 14%;
+    --card-foreground: 40 30% 92%;
+
+    --popover: 140 15% 14%;
+    --popover-foreground: 40 30% 92%;
+
+    --primary: 140 30% 60%;
+    --primary-foreground: 140 15% 12%;
+
+    --secondary: 25 75% 65%;
+    --secondary-foreground: 140 15% 12%;
+
+    --muted: 140 15% 20%;
+    --muted-foreground: 40 20% 65%;
+
+    --accent: 40 50% 30%;
+    --accent-foreground: 40 30% 92%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 40 30% 92%;
+
+    --border: 140 15% 22%;
+    --input: 140 15% 22%;
+    --ring: 140 30% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
