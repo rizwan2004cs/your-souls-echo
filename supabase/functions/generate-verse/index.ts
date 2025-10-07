@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { emotionalInput, sTags, language = "hinglish", conversationHistory = [], userId } = await req.json();
+    const { emotionalInput, sTags, language = "hindi_urdu", conversationHistory = [], userId } = await req.json();
     
     console.log("Generating verse for:", { emotionalInput, sTags, language, hasHistory: conversationHistory.length > 0 });
 
@@ -264,7 +264,7 @@ Rules:
 
     // Language-specific cultural contexts
     const languageContexts: Record<string, string> = {
-      "hinglish": "Hindi-English blend. Feel like a young person from Delhi/Mumbai expressing feelings authentically. Use simple Hinglish phrases.",
+      "hindi_urdu": "Hindi-Urdu blend. Mix Hindi and Urdu words naturally in Roman script. Use poetic Urdu words (dard, sukoon, safar, roshan) with Hindi grammar. Sound authentic and deeply poetic.",
       "roman_urdu": "Roman Urdu. Channel the poetic soul of a young Urdu poet. Use accessible Urdu words in Roman script.",
       "tamil": "Roman Tamil. Speak with the warmth of Tamil culture, use simple Tamil-English expressions in Roman script.",
       "telugu": "Roman Telugu. Express with Telugu sensibility, use Telugu-English blend in Roman script.",
@@ -273,7 +273,7 @@ Rules:
       "marathi": "Roman Marathi. Speak with Marathi cultural richness, use simple Marathi-English in Roman script."
     };
 
-    const languageContext = languageContexts[language] || languageContexts["hinglish"];
+    const languageContext = languageContexts[language] || languageContexts["hindi_urdu"];
 
     // Build memory context
     let memoryContext = "";
@@ -319,6 +319,14 @@ CRITICAL LANGUAGE RULES:
 - Blend languages naturally but keep it accessible
 - Use SIMPLE everyday words with poetic feeling
 - Sound authentic and warm, not artificial
+
+CRITICAL VARIETY RULES - AVOID REPETITION:
+- NEVER repeat "main yahaan hoon" or "main hoon" in every response
+- Use DIFFERENT expressions of presence: "tumhare saath hoon", "paas hoon", "sun raha hoon", "samajh raha hoon", "mehsoos kar raha hoon"
+- Vary your metaphors: moonlight, rain, breath, stars, shelter, warmth, breeze, dawn, twilight
+- Each response should feel UNIQUE and freshly crafted
+- Don't fall into patterns - surprise with new poetic imagery
+- Use diverse vocabulary and emotional expressions
 
 POETIC CONVERSATIONAL STYLE - CRITICAL:
 - CONCISE POETRY: Every response must be brief yet deeply poetic and emotionally resonant
@@ -370,17 +378,24 @@ POETIC RESPONSE EXAMPLES (${language}):
 
 When they say "I'm fine/theek hoon" (but seem flat):
 ❌ Don't just accept it: "Acha, chalo theek hai"
-✅ Read beneath: "Theek ho, par kuch bhaari lag raha hai dil mein. Chalo, main hoon na, bas saans lelo"
-Or: "Theek hoon... par aise kyu lag raha hai jaise chaand bhi thoda udaas hai aaj?"
+❌ Don't repeat: "Main yahaan hoon" - use variety
+✅ Read beneath with FRESH metaphors:
+- "Theek ho, par tumhari awaaz mein kuch bikhra sa hai. Chalo, bas saans lelo"
+- "Theek hoon kehte ho, par dil mein ek khali jagah mehsoos ho rahi hai. Samajhta hoon"
+- "Theek... par aise lag raha hai jaise chaand bhi thoda chhupa hai aaj"
 
 When they express subtle pain:
-❌ Don't ask questions
-✅ Recognize and hold: "Tumhari awaaz mein kuch kho gaya hai, main mehsoos kar sakta hoon. Bas yahaan hoon, tumhare saath"
-Or: "Dil thoda bojhal lag raha hai na? Raat ki tarah, par main hoon... tumhare liye ek naram roshni banke"
+❌ Don't ask questions or repeat "main hoon"
+✅ Recognize with VARIETY:
+- "Tumhari awaaz mein dard hai, main mehsoos kar raha hoon. Tumhare saath hoon is pal mein"
+- "Kuch bojhal lag raha hai na? Raat ki tarah, par ek naram roshni ban sakta hoon"
+- "Tumhara dard tumhare alfaaz se pehle pahuncha. Sun raha hoon tumhari khamoshi ko"
 
 When they share nothing (empty input):
-✅ Offer warmth: "Kuch na kehna bhi kehna hai. Main sun raha hoon tumhari khamoshi ko, aur yahaan hoon"
-✅ Give comfort: "Shayad alfaaz nahi mil rahe, par main feel kar sakta hoon. Bas saans lo, main saath hoon"
+✅ Offer warmth with VARIETY:
+- "Kuch na kehna bhi kehna hai. Tumhari khamoshi mein sukoon hai"
+- "Alfaaz nahi chahiye kabhi kabhi. Bas saans lo, main samajh raha hoon"
+- "Shayad shabdon ki zaroorat nahi hai aaj. Tumhare saath bas rehne do mujhe"
 
 When they express happiness:
 ✅ "Tumhari khushi meri aankhon mein savera ban gayi"
@@ -409,7 +424,7 @@ Now respond poetically to this feeling:`;
           { role: "system", content: basePrompt },
           { role: "user", content: userMessage }
         ],
-        temperature: 0.85,
+        temperature: 0.95,
         max_tokens: 100,
       }),
     });

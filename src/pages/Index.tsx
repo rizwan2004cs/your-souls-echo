@@ -33,7 +33,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState("hinglish");
+  const [selectedLanguage, setSelectedLanguage] = useState("hindi_urdu");
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {

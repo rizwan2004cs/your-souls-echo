@@ -15,7 +15,7 @@ export const LanguageSelector = ({ value, onChange }: LanguageSelectorProps) => 
           <SelectValue placeholder="Select language" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="hinglish">Hinglish (Hindi+English)</SelectItem>
+          <SelectItem value="hindi_urdu">Hindi-Urdu Mix (Roman)</SelectItem>
           <SelectItem value="roman_urdu">Roman Urdu</SelectItem>
           <SelectItem value="tamil">Tamil (Roman)</SelectItem>
           <SelectItem value="telugu">Telugu (Roman)</SelectItem>
