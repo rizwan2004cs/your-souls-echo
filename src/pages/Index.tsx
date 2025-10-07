@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { EmotionalInput } from "@/components/EmotionalInput";
 import { ModeSelector } from "@/components/ModeSelector";
 import { VerseDisplay } from "@/components/VerseDisplay";
+import { VerseHistoryCard } from "@/components/VerseHistoryCard";
 import { AuthDialog } from "@/components/AuthDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +30,7 @@ const Index = () => {
   const [user, setUser] = useState<any>(null);
   const [selectedLanguage, setSelectedLanguage] = useState("hinglish");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [verseHistory, setVerseHistory] = useState<any[]>([]);
 
   useEffect(() => {
     // Restore state from localStorage
@@ -166,6 +168,9 @@ const Index = () => {
             detected_mode: data.detectedMode || "",
             language: selectedLanguage,
           });
+          
+          // Refresh history
+          fetchVerseHistory();
         }
         
         // Find and set the mode
@@ -188,6 +193,28 @@ const Index = () => {
       setIsLoading(false);
     }
   };
+
+  const fetchVerseHistory = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from("conversation_history")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    
+    if (data && data.length > 0) {
+      // Exclude the most recent one (it's shown large)
+      setVerseHistory(data.slice(1));
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchVerseHistory();
+    }
+  }, [user]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -255,7 +282,7 @@ const Index = () => {
           <EmotionalInput onSubmit={handleGenerateVerse} isLoading={isLoading} />
         </section>
 
-        {/* Verse Display */}
+        {/* Latest Verse Display - Large */}
         {verse && (
           <section className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
             <VerseDisplay
@@ -265,6 +292,27 @@ const Index = () => {
               emotionalInput={emotionalInput}
               modeId={selectedMode?.id || ""}
             />
+          </section>
+        )}
+
+        {/* Previous Verses - Mini Cards */}
+        {user && verseHistory.length > 0 && (
+          <section className="max-w-5xl mx-auto space-y-4">
+            <h3 className="text-lg font-medium text-muted-foreground text-center mb-6">
+              Your Previous Verses
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {verseHistory.map((item) => (
+                <VerseHistoryCard
+                  key={item.id}
+                  verse={item.verse_response}
+                  translation={item.translation}
+                  emotionalInput={item.emotional_input}
+                  detectedMode={item.detected_mode}
+                  createdAt={item.created_at}
+                />
+              ))}
+            </div>
           </section>
         )}
 
