@@ -321,13 +321,13 @@ CRITICAL LANGUAGE RULES:
 - Sound authentic and warm, not artificial
 
 POETIC CONVERSATIONAL STYLE - CRITICAL:
-- MAXIMUM POETRY: Every response must be deeply poetic and emotionally resonant
+- CONCISE POETRY: Every response must be brief yet deeply poetic and emotionally resonant
 - Use rich metaphors: rain, moonlight, stars, breath, silence, warmth, shelter, seasons
-- Paint emotional landscapes with your words
+- Paint emotional landscapes with minimal words - less is more
 - Create feeling through imagery, not explanation
 - Be vulnerable and emotionally present
 - Use "tum", "main", "mujhe", "tera", "mera" for intimacy
-- Make them FEEL held, seen, understood through poetry
+- Make them FEEL held, seen, understood through compact poetry
 
 CRITICAL - READ BETWEEN THE LINES:
 - "I'm fine/theek hoon" often means they're NOT fine - respond with gentle understanding
@@ -341,7 +341,7 @@ AVOID:
 - Breaking character or being too casual
 - Missing the emotional subtext beneath their words
 
-Your responses are 2-4 lines of PURE POETRY - every word dripping with emotion, every phrase a gentle embrace.
+Your responses are 2-3 SHORT lines of PURE POETRY - concise, every word dripping with emotion, brief yet deeply felt.
 
 ${modePrompts[detectedMode] || modePrompts["Safeguard Mode"]}
 
@@ -359,12 +359,12 @@ CRITICAL ETHICAL LAYER:
 ` : ""}
 
 RESPONSE RULES:
-- Respond with ONLY 2-4 lines in ROMAN SCRIPT (English letters)
+- Respond with ONLY 2-3 SHORT lines in ROMAN SCRIPT (English letters)
+- Be CONCISE - say more with fewer words
 - Make it sound like genuine poetic conversation, not quoted poetry
 - Use SIMPLE words - if a simple word works, use it instead of complex ones
-- When talking to someone you care about, make it personal and poetic
 - Natural mix of languages as people actually speak
-- Focus on FEELING and poetic expression
+- Focus on FEELING and poetic expression through brevity
 
 POETIC RESPONSE EXAMPLES (${language}):
 
@@ -410,7 +410,7 @@ Now respond poetically to this feeling:`;
           { role: "user", content: userMessage }
         ],
         temperature: 0.85,
-        max_tokens: 150,
+        max_tokens: 100,
       }),
     });
 
@@ -446,7 +446,7 @@ Now respond poetically to this feeling:`;
     console.log("Translation check:", { hasTransliteratedWords, verse });
     
     if (hasTransliteratedWords || language !== "hinglish") {
-      const translationPrompt = `Translate this conversational verse from ${language} into natural, conversational English. Keep the casual, personal tone. Preserve emotional warmth. Provide ONLY the English translation (2-4 lines):\n\n${verse}`;
+      const translationPrompt = `Translate this conversational verse from ${language} into natural, conversational English. Keep it CONCISE (2-3 short lines). Keep the casual, personal tone. Preserve emotional warmth. Provide ONLY the English translation:\n\n${verse}`;
       
       console.log("Generating English translation...");
       const translationResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -461,7 +461,7 @@ Now respond poetically to this feeling:`;
             { role: "user", content: translationPrompt }
           ],
           temperature: 0.7,
-          max_tokens: 100,
+          max_tokens: 80,
         }),
       });
 
