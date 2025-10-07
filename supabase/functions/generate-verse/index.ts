@@ -406,10 +406,10 @@ When uncertain what they feel:
 
 Remember: Be DEEPLY POETIC. Create emotional atmospheres with metaphors. Make every response feel like a warm embrace through words. Read what they DON'T say.
 
-Now respond poetically to this feeling:`;
+Now respond poetically in ${language} (${languageContext}) to this feeling:`;
 
     const userMessage = isEmpty 
-      ? "I haven't said anything, but I need some comfort and soothing words. Please offer me gentle poetic warmth."
+      ? `I haven't said anything, but I need some comfort and soothing words. Please offer me gentle poetic warmth in ${language} language.`
       : emotionalInput;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
