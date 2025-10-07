@@ -267,7 +267,7 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {sessionVerses.slice(1).map((item, index) => (
                 <VerseHistoryCard
-                  key={index}
+                  key={`verse-${sessionVerses.length - index}`}
                   verse={item.verse}
                   translation={item.translation}
                   emotionalInput={item.emotionalInput}
