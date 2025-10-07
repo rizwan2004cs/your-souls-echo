@@ -12,10 +12,8 @@ export const EmotionalInput = ({ onSubmit, isLoading }: EmotionalInputProps) => 
   const [input, setInput] = useState("");
 
   const handleSubmit = () => {
-    if (input.trim()) {
-      onSubmit(input);
-      setInput("");
-    }
+    onSubmit(input.trim());
+    setInput("");
   };
 
   return (
@@ -23,7 +21,7 @@ export const EmotionalInput = ({ onSubmit, isLoading }: EmotionalInputProps) => 
       <Textarea
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Share what you're feeling... your words will be held gently"
+        placeholder="Share what you're feeling... or submit empty to receive soothing words"
         className="min-h-[120px] resize-none bg-card border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30 transition-all"
         disabled={isLoading}
         onKeyDown={(e) => {
@@ -35,7 +33,7 @@ export const EmotionalInput = ({ onSubmit, isLoading }: EmotionalInputProps) => 
       <div className="flex justify-end">
         <Button
           onClick={handleSubmit}
-          disabled={!input.trim() || isLoading}
+          disabled={isLoading}
           className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-lg hover:shadow-xl"
         >
           {isLoading ? (
