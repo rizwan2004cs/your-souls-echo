@@ -14,16 +14,191 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversation_history: {
+        Row: {
+          created_at: string
+          detected_mode: string | null
+          emotional_input: string
+          id: string
+          language: string | null
+          translation: string | null
+          user_id: string | null
+          verse_response: string
+        }
+        Insert: {
+          created_at?: string
+          detected_mode?: string | null
+          emotional_input: string
+          id?: string
+          language?: string | null
+          translation?: string | null
+          user_id?: string | null
+          verse_response: string
+        }
+        Update: {
+          created_at?: string
+          detected_mode?: string | null
+          emotional_input?: string
+          id?: string
+          language?: string | null
+          translation?: string | null
+          user_id?: string | null
+          verse_response?: string
+        }
+        Relationships: []
+      }
+      emotional_modes: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          response_style: string
+          trigger: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          response_style: string
+          trigger: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          response_style?: string
+          trigger?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          preferred_language: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          preferred_language?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          preferred_language?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      verses: {
+        Row: {
+          created_at: string
+          emotional_input: string
+          id: string
+          is_private: boolean | null
+          language: string
+          mode_id: string | null
+          tags: string[] | null
+          user_id: string | null
+          verse_response: string
+        }
+        Insert: {
+          created_at?: string
+          emotional_input: string
+          id?: string
+          is_private?: boolean | null
+          language: string
+          mode_id?: string | null
+          tags?: string[] | null
+          user_id?: string | null
+          verse_response: string
+        }
+        Update: {
+          created_at?: string
+          emotional_input?: string
+          id?: string
+          is_private?: boolean | null
+          language?: string
+          mode_id?: string | null
+          tags?: string[] | null
+          user_id?: string | null
+          verse_response?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verses_mode_id_fkey"
+            columns: ["mode_id"]
+            isOneToOne: false
+            referencedRelation: "emotional_modes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +325,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

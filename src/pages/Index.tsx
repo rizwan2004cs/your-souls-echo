@@ -146,17 +146,15 @@ const Index = () => {
         
         setSessionVerses(prev => [newVerse, ...prev]);
         
-        // Save to conversation history if logged in
-        if (user) {
-          await supabase.from("conversation_history").insert({
-            user_id: user.id,
-            emotional_input: input,
-            verse_response: data.verse,
-            translation: data.translation || "",
-            detected_mode: data.detectedMode || "",
-            language: selectedLanguage,
-          });
-        }
+        // Save to conversation history for ALL users (both logged in and anonymous)
+        await supabase.from("conversation_history").insert({
+          user_id: user?.id || null,
+          emotional_input: input,
+          verse_response: data.verse,
+          translation: data.translation || "",
+          detected_mode: data.detectedMode || "",
+          language: selectedLanguage,
+        });
         
         // Find and set the mode
         const { data: modes } = await supabase

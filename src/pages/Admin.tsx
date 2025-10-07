@@ -8,13 +8,14 @@ import { toast } from "sonner";
 
 interface ConversationLog {
   id: string;
-  user_id: string;
+  user_id: string | null;
   emotional_input: string;
   verse_response: string;
   translation: string;
   detected_mode: string;
   language: string;
   created_at: string;
+  user_email?: string;
 }
 
 const Admin = () => {
@@ -53,14 +54,26 @@ const Admin = () => {
 
       setIsAdmin(true);
 
-      // Fetch all conversation history
+      // Fetch all conversation history with user emails
       const { data: logsData, error: logsError } = await supabase
         .from("conversation_history")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (logsError) throw logsError;
-      setLogs(logsData || []);
+
+      // Fetch user emails for non-anonymous conversations
+      const logsWithEmails = await Promise.all(
+        (logsData || []).map(async (log) => {
+          if (log.user_id) {
+            const { data: { user: userData } } = await supabase.auth.admin.getUserById(log.user_id);
+            return { ...log, user_email: userData?.email };
+          }
+          return { ...log, user_email: undefined };
+        })
+      );
+
+      setLogs(logsWithEmails);
     } catch (error) {
       console.error("Error:", error);
       toast.error("Failed to load admin data");
@@ -121,7 +134,12 @@ const Admin = () => {
                         {new Date(log.created_at).toLocaleString()}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        User ID: {log.user_id.substring(0, 8)}... | Language: {log.language} | Mode: {log.detected_mode}
+                        {log.user_id ? (
+                          <>User: {log.user_email || `${log.user_id.substring(0, 8)}...`}</>
+                        ) : (
+                          <span className="text-orange-500">Anonymous User</span>
+                        )}
+                        {" | "}Language: {log.language} | Mode: {log.detected_mode}
                       </p>
                     </div>
                   </div>
