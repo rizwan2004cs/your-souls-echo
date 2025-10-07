@@ -8,7 +8,7 @@ import { AuthDialog } from "@/components/AuthDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { User, Heart, Sparkles, Shield } from "lucide-react";
+import { User, Heart, Sparkles, Shield, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface EmotionalMode {
@@ -184,6 +184,12 @@ const Index = () => {
     toast.success("Signed out");
   };
 
+  const handleNewSession = () => {
+    setSessionVerses([]);
+    setSelectedMode(null);
+    toast.success("New session started");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Header */}
@@ -239,8 +245,21 @@ const Index = () => {
 
         {/* Input Section */}
         <section className="max-w-3xl mx-auto space-y-6">
-          <div className="flex items-center justify-end mb-4">
-            <LanguageSelector value={selectedLanguage} onChange={handleLanguageChange} />
+          <div className="flex items-center justify-between mb-4">
+            {sessionVerses.length > 0 && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleNewSession}
+                className="gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                New Session
+              </Button>
+            )}
+            <div className={sessionVerses.length === 0 ? "ml-auto" : ""}>
+              <LanguageSelector value={selectedLanguage} onChange={handleLanguageChange} />
+            </div>
           </div>
           <EmotionalInput onSubmit={handleGenerateVerse} isLoading={isLoading} />
         </section>
