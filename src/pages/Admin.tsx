@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, ArrowLeft } from "lucide-react";
+import { Heart, ArrowLeft, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -22,10 +22,18 @@ const Admin = () => {
   const [logs, setLogs] = useState<ConversationLog[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     checkAdminAndFetchLogs();
+    
+    // Set up auto-refresh every 10 seconds
+    const interval = setInterval(() => {
+      fetchLogs();
+    }, 10000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const checkAdminAndFetchLogs = async () => {
@@ -82,6 +90,40 @@ const Admin = () => {
     }
   };
 
+  const fetchLogs = async () => {
+    try {
+      // Fetch all conversation history
+      const { data: logsData, error: logsError } = await supabase
+        .from("conversation_history")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (logsError) throw logsError;
+
+      // Fetch user emails for non-anonymous conversations
+      const logsWithEmails = await Promise.all(
+        (logsData || []).map(async (log) => {
+          if (log.user_id) {
+            const { data: { user: userData } } = await supabase.auth.admin.getUserById(log.user_id);
+            return { ...log, user_email: userData?.email };
+          }
+          return { ...log, user_email: undefined };
+        })
+      );
+
+      setLogs(logsWithEmails);
+    } catch (error) {
+      console.error("Error fetching logs:", error);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchLogs();
+    setRefreshing(false);
+    toast.success("Conversations refreshed");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
@@ -122,6 +164,16 @@ const Admin = () => {
             <h2 className="text-2xl font-semibold text-foreground">
               All Conversations ({logs.length})
             </h2>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
           </div>
 
           <div className="space-y-4">
