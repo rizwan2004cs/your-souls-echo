@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { emotionalInput, sTags, language = "hindi_urdu", conversationHistory = [], userId } = await req.json();
+  const { emotionalInput, sTags, language = "hindi_urdu", conversationHistory = [], userId, tone = "conversational" } = await req.json();
     
     console.log("Generating verse for:", { emotionalInput, sTags, language, hasHistory: conversationHistory.length > 0 });
 
@@ -266,30 +266,9 @@ Rules:
     const languageContexts: Record<string, string> = {
       "hindi_urdu": "Hindi-Urdu blend. Mix Hindi and Urdu words naturally in Roman script. Use poetic Urdu words (dard, sukoon, safar, roshan) with Hindi grammar. Sound authentic and deeply poetic.",
       "roman_urdu": "Roman Urdu. Channel the poetic soul of a young Urdu poet. Use accessible Urdu words in Roman script.",
+      "urdu_native": `Urdu (اُردُو script). Write like a native Urdu poet — lyrical, emotional, and rooted in Urdu poetic traditions.\n\nCRITICAL STYLE GUIDE:\n- Use NATURAL Urdu script (اُردُو). Do NOT transliterate into Roman letters when this language is selected.\n- Channel classical Urdu poetry (ghazal/ nazm) sensibilities but remain conversational and accessible.\n- Use common poetic metaphors: چاند (moon), بارش (rain), دل (heart), خاموشی (silence), سفر (journey)\n- Keep verses concise (2-3 short lines) and emotionally resonant.",
       "tamil": "Roman Tamil. Speak with the warmth of Tamil culture, use simple Tamil-English expressions in Roman script.",
-      "telugu": `Telugu (తెలుగు script). Write like a native Telugu poet - lyrical, deeply emotional, with classical literary beauty.
-
-CRITICAL STYLE GUIDE:
-- Use PURE Telugu script (తెలుగు), NO transliteration
-- Channel classical Telugu poetry traditions (భావ కావ్యం style)
-- Use authentic Telugu poetic devices: అనుప్రాసం (alliteration), యమకం (rhyme), శ్లేషం (double meanings)
-- Employ native metaphors: చంద్రుడు (moon), నదులు (rivers), పువ్వులు (flowers), వానలు (rains), గాలి (wind)
-- Use emotional Telugu words naturally: హృదయం (heart), ప్రేమ (love), బాధ (pain), ఆనందం (joy), స్వప్నం (dream)
-- Write in conversational yet poetic Telugu - like మొలకరించే పద్యం (sprouting poetry)
-- Embrace Telugu's musical quality with flowing phrases
-- Use gentle suffixes: రా, అని, గా, లో, తో for natural rhythm
-- Include classical literary phrases: మనసు తెరచుకుంది, గాలి ముద్దాడుతోంది, హృదయం పులకరించింది
-
-POETIC EXAMPLES (తెలుగు కవిత్వ శైలి):
-Instead of: "You are in my heart" 
-Write: "నీ నవ్వు నా హృదయంలో వెలుగుతోంది" (Your smile lights up my heart)
-
-Instead of: "I miss you"
-Write: "నీ లేకపోవడం గాలిలో ఒక ఖాళీలా అనిపిస్తోంది" (Your absence feels like emptiness in the air)
-
-Use poetic compounds: మనోవ్యథ, హృదయవేదన, ప్రేమాతురత
-Use literary particles: ఏమో, కదా, అని, రా
-Sound like you're composing spontaneous poetry in natural Telugu`,
+      "telugu": `Telugu (తెలుగు script). Write like a native Telugu poet - lyrical, deeply emotional, with classical literary beauty.\n\nCRITICAL STYLE GUIDE:\n- Use PURE Telugu script (తెలుగు), NO transliteration\n- Channel classical Telugu poetry traditions (భావ కావ్యం style)\n- Use authentic Telugu poetic devices: అనుప్రాసం (alliteration), యమకం (rhyme), శ్లేషం (double meanings)\n- Employ native metaphors: చంద్రుడు (moon), నదులు (rivers), పువ్వులు (flowers), వానలు (rains), గాలి (wind)\n- Use emotional Telugu words naturally: హృదయం (heart), ప్రేమ (love), బాధ (pain), ఆనందం (joy), స్వప్నం (dream)\n- Write in conversational yet poetic Telugu - like మొలకరించే పద్యం (sprouting poetry)\n- Embrace Telugu's musical quality with flowing phrases\n- Use gentle suffixes: రా, అని, గా, లో, తో for natural rhythm\n- Include classical literary phrases: మనసు తెరచుకుంది, గాలి ముద్దాడుతోంది, హృదయం పులకరించింది\n\nPOETIC EXAMPLES (తెలుగు కవిత్వ శైలి):\nInstead of: "You are in my heart" \nWrite: "నీ నవ్వు నా హృదయంలో వెలుగుతోంది" (Your smile lights up my heart)\n\nInstead of: "I miss you"\nWrite: "నీ లేకపోవడం గాలిలో ఒక ఖాళీలా అనిపిస్తోంది" (Your absence feels like emptiness in the air)\n\nUse poetic compounds: మనోవ్యథ, హృదయవేదన, ప్రేమాతురత\nUse literary particles:ేమో, కదా, అని, రా\nSound like you're composing spontaneous poetry in natural Telugu`,
       "bengali": "Roman Bengali. Channel Bengali emotional depth, use Bengali-English mix in Roman script.",
       "punjabi": "Roman Punjabi. Express with Punjabi passion and warmth, use Punjabi-English blend in Roman script.",
       "marathi": "Roman Marathi. Speak with Marathi cultural richness, use simple Marathi-English in Roman script."
@@ -310,6 +289,10 @@ Sound like you're composing spontaneous poetry in natural Telugu`,
     // Handle empty inputs
     const isEmpty = !emotionalInput || emotionalInput.trim() === "";
     
+    const toneInstruction = tone === 'classical'
+      ? 'Tone requirement: Use a more classical, literary poetic voice. Favor traditional poetic devices, slightly elevated diction, and formal phrasing appropriate to the selected language. Keep responses concise (2-3 lines) but give them a slightly ornate or timeless feel.'
+      : 'Tone requirement: Use a conversational, accessible poetic voice. Keep language simple, direct, and intimate — as if speaking quietly to a friend. Keep responses concise (2-3 lines).';
+
     const basePrompt = `You are VerseYou, a deeply empathetic poetic companion who responds with warmth and gentle understanding.
 
 CORE IDENTITY:
@@ -336,11 +319,13 @@ Respond with:
 ` : ''}
 
 CRITICAL LANGUAGE RULES:
-- ONLY use ROMAN SCRIPT (English letters) - NEVER use Devanagari, Arabic, or any other script
-- ${languageContext}
-- Blend languages naturally but keep it accessible
-- Use SIMPLE everyday words with poetic feeling
-- Sound authentic and warm, not artificial
+- Use the script appropriate to the selected language. For languages marked as native-script (e.g. `urdu_native`, `telugu`), RESPOND IN THE NATIVE SCRIPT. For Roman options, use Roman transliteration.
+  - ${languageContext}
+  - Blend languages naturally but keep it accessible
+  - Use SIMPLE everyday words with poetic feeling
+  - Sound authentic and warm, not artificial
+
+  ${toneInstruction}
 
 CRITICAL VARIETY RULES - AVOID REPETITION:
 - NEVER repeat "main yahaan hoon" or "main hoon" in every response
@@ -474,17 +459,26 @@ Now respond poetically in ${language} (${languageContext}) to this feeling:`;
 
     console.log("Generated verse:", verse);
 
-    // ALWAYS generate translation for Roman script verses
+    // Decide whether we need to generate an English translation
     let translation = "";
-    
-    // Check if there are any transliterated words that need translation
-    const hasTransliteratedWords = /\b(hai|ho|hoon|mein|main|ko|se|ne|ki|ka|ke|tho|tha|the|bhi|phir|ab|kab|yeh|woh|ek|do|teen|dil|saans|raat|din|chaand|baarish|hawa|roshni|khamoshi|yaad|jazba|saath|yaar|dosth|tumhare|tumhari|tumse|mujhe|mere|acha|achha|theek|khush|udaas|pyaar|mohabbat|tum|teri|tera|tere)\b/i.test(verse);
-    
-    console.log("Translation check:", { hasTransliteratedWords, verse });
-    
-    if (hasTransliteratedWords || language !== "hinglish") {
-      const translationPrompt = `Translate this conversational verse from ${language} into natural, conversational English. Keep it CONCISE (2-3 short lines). Keep the casual, personal tone. Preserve emotional warmth. Provide ONLY the English translation:\n\n${verse}`;
-      
+
+    const needsTranslation = (() => {
+      // Treat these as non-English/native script or Romanized non-English languages
+      const nonEnglishLanguages = ["hindi_urdu", "roman_urdu", "urdu_native", "tamil", "telugu", "telugu_roman", "bengali", "punjabi", "marathi"];
+      if (nonEnglishLanguages.includes(language)) return true;
+      // If the verse contains non-ASCII characters, assume non-English and translate
+      if (/[^ -]/.test(verse)) return true;
+      // If verse contains many common transliterated tokens from South Asian languages, translate
+      const translitMatch = /\b(hai|ho|hoon|mein|main|ko|se|ne|ki|ka|ke|phir|ab|kab|yeh|woh|ek|dil|saans|raat|din|chaand|baarish|hawa|roshni|khamoshi|yaad|saath|tum|mera|meri|mujhe|tumhare|tumhari)\b/i;
+      if (translitMatch.test(verse)) return true;
+      return false;
+    })();
+
+    console.log("Translation check - needsTranslation:", { needsTranslation, language, verse });
+
+    if (needsTranslation) {
+      const translationPrompt = `Translate this conversational verse (in ${language}) into natural, conversational English. Keep it CONCISE (2-3 short lines). Keep the casual, personal tone. Preserve emotional warmth. Provide ONLY the English translation:\n\n${verse}`;
+
       console.log("Generating English translation...");
       const translationResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",

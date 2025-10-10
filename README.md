@@ -71,3 +71,52 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Language options & testing
+
+This project now supports additional language options (including native-script replies) for the poetry responses. New options added to the language selector include:
+
+- `hindi_urdu` — Hindi/Urdu blend (Roman)
+- `roman_urdu` — Roman Urdu (Latin script)
+- `urdu_native` — Urdu (اُردُو) in native script
+- `tamil` — Roman Tamil (Latin script)
+- `telugu_roman` — Telugu (Roman transliteration)
+- `telugu_native` — Telugu (తెలుగు) in native script
+- `bengali`, `punjabi`, `marathi` — Roman transliterations
+
+How it works
+- The UI selector (`src/components/LanguageSelector.tsx`) lets users pick Roman or native-script variants where applicable.
+- The server function at `supabase/functions/generate-verse/index.ts` reads the selected language and adapts the prompt instructions so responses are produced in the requested script/voice. For native-script options (e.g. `urdu_native`, `telugu_native`) the model is instructed to return native script; for Roman options it will return transliteration.
+- The function will also automatically generate an English translation when the response is non-English or in native script.
+
+Quick local test (frontend)
+
+1. Start the dev server in the project root:
+
+```bash
+npm i
+npm run dev
+```
+
+2. Open the app in the browser, select a language from the language selector, and submit an emotional input. Observe the verse output and the English translation.
+
+Quick function test (Supabase function)
+
+1. Deploy or run the function in your Supabase functions environment. Ensure the `LOVABLE_API_KEY` environment variable is set for the function.
+
+2. You can test by calling the function from the frontend (the app already invokes it) or by making a direct HTTP POST to the function endpoint with a JSON body like:
+
+```json
+{
+	"emotionalInput": "I feel so tired and alone",
+	"sTags": ["S"],
+	"language": "urdu_native",
+	"conversationHistory": []
+}
+```
+
+3. The function will respond with `{ verse, translation, detectedMode }`. When `language` is a native-script option, `verse` should be in native script and `translation` should contain an English translation.
+
+Notes
+- Translation quality and script fidelity depend on the backend LLM (the prompts provide guidance). If you’d like different tone or stricter classical poetry style for any language (e.g., ghazal-style Urdu vs conversational Urdu), say which language and I’ll tighten the prompts.
+

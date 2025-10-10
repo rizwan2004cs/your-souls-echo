@@ -6,6 +6,7 @@ import { VerseDisplay } from "@/components/VerseDisplay";
 import { VerseHistoryCard } from "@/components/VerseHistoryCard";
 import { AuthDialog } from "@/components/AuthDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { ToneSelector } from "@/components/ToneSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { User, Heart, Sparkles, Shield, RefreshCw } from "lucide-react";
@@ -34,6 +35,7 @@ const Index = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [selectedLanguage, setSelectedLanguage] = useState("hindi_urdu");
+  const [selectedTone, setSelectedTone] = useState("conversational");
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -127,6 +129,7 @@ const Index = () => {
           emotionalInput: input,
           sTags: ["S"],
           language: selectedLanguage,
+          tone: selectedTone,
           conversationHistory,
           userId: user?.id || null,
         },
@@ -255,8 +258,9 @@ const Index = () => {
                 New Session
               </Button>
             )}
-            <div className={sessionVerses.length === 0 ? "ml-auto" : ""}>
+            <div className={`flex items-center gap-2 ${sessionVerses.length === 0 ? "ml-auto" : ""}`}>
               <LanguageSelector value={selectedLanguage} onChange={handleLanguageChange} />
+              <ToneSelector value={selectedTone} onChange={setSelectedTone} />
             </div>
           </div>
           <EmotionalInput onSubmit={handleGenerateVerse} isLoading={isLoading} />
@@ -271,6 +275,7 @@ const Index = () => {
               detectedMode={sessionVerses[0].detectedMode}
               emotionalInput={sessionVerses[0].emotionalInput}
               modeId={selectedMode?.id || ""}
+              language={selectedLanguage}
             />
           </section>
         )}

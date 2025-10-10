@@ -11,9 +11,10 @@ interface VerseDisplayProps {
   detectedMode?: string;
   emotionalInput: string;
   modeId: string;
+  language?: string;
 }
 
-export const VerseDisplay = ({ verse, translation, detectedMode, emotionalInput, modeId }: VerseDisplayProps) => {
+export const VerseDisplay = ({ verse, translation, detectedMode, emotionalInput, modeId, language }: VerseDisplayProps) => {
   const [isSaved, setIsSaved] = useState(false);
   const [user, setUser] = useState<any>(null);
 
@@ -33,7 +34,7 @@ export const VerseDisplay = ({ verse, translation, detectedMode, emotionalInput,
         emotional_input: emotionalInput,
         mode_id: modeId || null,
         verse_response: verse,
-        language: "multi",
+        language: language || "multi",
         tags: [],
         is_private: false,
       });
